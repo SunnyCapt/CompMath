@@ -3,11 +3,15 @@ package capt.sunny;
 import capt.sunny.gaussian.MatrixWrapper;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.Scanner;
+
+import static java.lang.Math.random;
 
 enum SourceType {
     STDIN,
-    FILE
+    FILE,
+    RANDOM
 }
 
 enum Type {
@@ -18,20 +22,20 @@ enum Type {
 
 public class DataSource {
     private Scanner scanner;
-    private String filePath;
     private SourceType dataSource = SourceType.STDIN;
 
     public DataSource() throws Exception {
         scanner = new Scanner(System.in);
-        String dataSrc = read("Select data source s[tdin]/f[ile]: ");
+        String dataSrc = read("Select data source s[tdin]/f[ile]/r[andom]: ");
         SourceType st = (dataSrc.equals("s") || dataSrc.equals("stdin")) ? SourceType.STDIN :
-                (dataSrc.equals("f") || dataSrc.equals("file")) ? SourceType.FILE : null;
+                (dataSrc.equals("f") || dataSrc.equals("file")) ? SourceType.FILE :
+                        (dataSrc.equals("r") || dataSrc.equals("random")) ? SourceType.RANDOM : null;
 
         if (st == null)
             throw new Exception("Wrong data source type argument");
 
         if (st == SourceType.FILE) {
-            filePath = read("Enter path to file: ");
+            String filePath = read("Enter path to file: ");
             dataSource = st;
             File file = new File(filePath);
             if (file.exists() && file.isFile())
@@ -70,7 +74,7 @@ public class DataSource {
         return line;
     }
 
-    public MatrixWrapper getMatrixFromConsole() throws Exception {
+    private MatrixWrapper getMatrixFromConsole() throws Exception {
         int size = (int) getData("Enter n<=20 (size of matrix): ", Type.INT);
         double[][] mainCoefficients = new double[size][size];
         double[][] freeCoefficients = new double[size][1];
@@ -78,10 +82,10 @@ public class DataSource {
         for (int i = 0; i < size; i++) {
             String[] coefficients = (
                     (String) getData(
-                            String.format("Enter %d coefficients of %d equations: ", size + 1, i),
+                            String.format("Enter %d coefficients of %d equations (use ; as delimiter): ", size + 1, i),
                             Type.STRING
                     )
-            ).split(",");
+            ).split(";");
 
             if (coefficients.length != size + 1)
                 throw new Exception(
@@ -92,12 +96,39 @@ public class DataSource {
                         )
                 );
 
-            freeCoefficients[i][0] = Double.parseDouble(coefficients[size].strip());
+            freeCoefficients[i][0] = Double.parseDouble(coefficients[size].strip().replace(',', '.'));
             for (int j = 0; j < size; j++) {
-                mainCoefficients[i][j] = Double.parseDouble(coefficients[j].strip());
+                mainCoefficients[i][j] = Double.parseDouble(coefficients[j].strip().replace(',', '.'));
             }
         }
 
         return new MatrixWrapper(size, mainCoefficients, freeCoefficients);
+    }
+
+    private MatrixWrapper getRandomMatrix() throws Exception {
+        int size = (int) getData("Enter n<=20 (size of matrix): ", Type.INT);
+        double[][] mainCoefficients = new double[size][size];
+        double[][] freeCoefficients = new double[size][1];
+        double[][] coefficientsToPrint = new double[size][size + 1];
+        for (int i = 0; i < size; i++) {
+            coefficientsToPrint[i][size] = freeCoefficients[i][0] = random() * 60 - 30;
+            for (int j = 0; j < size; j++) {
+                coefficientsToPrint[i][j] = mainCoefficients[i][j] = random() * 60 - 30;
+            }
+        }
+        System.out.printf(
+                "Generated matrix:\n%s",
+                Arrays.deepToString(coefficientsToPrint)
+                        .replace("[[", "[\n\t[")
+                        .replace("], [", "],\n\t[")
+                        .replace("]]", "]\n]\n")
+        );
+        return new MatrixWrapper(size, mainCoefficients, freeCoefficients);
+    }
+
+    public MatrixWrapper getMatrix() throws Exception {
+        if (dataSource == SourceType.RANDOM)
+            return getMatrixFromConsole();
+        return getRandomMatrix();
     }
 }

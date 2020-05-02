@@ -10,7 +10,7 @@ public class Application {
 
     public static void main(String[] args) throws Exception {
         try {
-            MatrixWrapper data = new DataSource().getMatrixFromConsole();
+            MatrixWrapper data = new DataSource().getMatrix();
             System.out.println("\n\nResult:");
 
             double determinant = GaussianElim.calculateDeterminant(data);
