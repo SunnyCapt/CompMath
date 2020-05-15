@@ -43,6 +43,8 @@ public class DataSource {
             else
                 throw new Exception("Wrong file path");
         }
+        else
+            dataSource = st;
     }
 
     public Object getData(String dataName, Type type) throws Exception {
@@ -63,7 +65,7 @@ public class DataSource {
     }
 
     private String read(String str) {
-        if (dataSource == SourceType.STDIN)
+        if (dataSource != SourceType.FILE)
             System.out.print(str);
 
         String line = scanner.nextLine();
@@ -128,7 +130,7 @@ public class DataSource {
 
     public MatrixWrapper getMatrix() throws Exception {
         if (dataSource == SourceType.RANDOM)
-            return getMatrixFromConsole();
-        return getRandomMatrix();
+            return getRandomMatrix();
+        return getMatrixFromConsole();
     }
 }

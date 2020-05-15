@@ -1,1 +1,1 @@
-# Gaussian elimination
+# Gaussian elimination implementation

@@ -89,11 +89,11 @@ public class GaussianElim {
 
     private static double calcUnknownVar(int i, double[] knownVars, MatrixWrapper data) {
         double sumOfRightPart = data.getTriangularMatrix()[i][data.getMatrixSize()];
-        double sumOfLeftpart = 0;
+        double sumOfLeftPart = 0;
         for (int k = i + 1; k < data.getMatrixSize(); k++) {
-            sumOfLeftpart += knownVars[k] * data.getTriangularMatrix()[i][k];
+            sumOfLeftPart += knownVars[k] * data.getTriangularMatrix()[i][k];
         }
-        return (sumOfRightPart - sumOfLeftpart) / data.getTriangularMatrix()[i][i];
+        return (sumOfRightPart - sumOfLeftPart) / data.getTriangularMatrix()[i][i];
     }
 
     private static void prepareSubj(int j, double[][] tmpTriangularMatrix, MatrixWrapper data) throws Exception {

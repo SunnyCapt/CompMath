@@ -6,9 +6,7 @@ import capt.sunny.gaussian.MatrixWrapper;
 import java.util.Arrays;
 
 public class Application {
-    private static boolean debug;
-
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         try {
             MatrixWrapper data = new DataSource().getMatrix();
             System.out.println("\n\nResult:");
